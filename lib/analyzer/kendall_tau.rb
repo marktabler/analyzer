@@ -46,7 +46,7 @@ module Analyzer
     def p1?
       return false unless sufficient_data?
       if @x.size <= 30
-        correlation.abs >= SIG_P1[pairs.size]
+        correlation.abs >= SIG_P1[@x.size]
       else
         correlation.abs >= SIG_P1_40
       end
@@ -55,7 +55,7 @@ module Analyzer
     def p5?
       return false unless sufficient_data?
       if @x.size <= 30
-        correlation.abs >= SIG_P5[pairs.size]
+        correlation.abs >= SIG_P5[@x.size]
       else
         correlation.abs >= SIG_P5_40
       end

@@ -3,35 +3,44 @@ module Analyzer
     MW_TEST_A = [[true, true, false, false, true, false, true, false],
                  [1, 2, 3, 4, 5, 6, 7, 8]]
 
-    MW_TEST_B = [[2, 2, 3, 4, 5, 0, 7, 1],
-                 [true, true, true, true, true, false, true, false]]
+    MW_TEST_B = [[1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8],
+                 [true, true, false, false, true, false, true, false, true, true, false, false, true, false, true, false]]
 
-    MW_TEST_C = [[true, true, false, false, true, false, true, false, true, true, false, false, true, false, true, false],
-                 [1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8]]
-
-    MW_TEST_D = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+    MW_TEST_C = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
                  [1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 2, 7, 8, 9, 7, 8, 9, 7, 8, 9, 1]]
 
-    MW_TEST_E = [[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    MW_TEST_D = [[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
                  [1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 2, 7, 8, 9, 7, 8, 9, 7, 8, 9, 1]]
    
-    MW_TEST_F = [[1, 2, 3],
+    MW_TEST_E = [[1, 2, 3],
                  [4, 5, 6]]
+    MW_TEST_F = [[1, 0, 1, 0, 1, 1, 1, 0],
+                 [0, 1, 0, 1, 1, 1, 0, 1]]
 
-    TEST_KA = [[4, 2, 5, 0.5, 1.5, 2, 0, 1, 0, 1.5, 0],
+    KT_TEST_A = [[4, 2, 5, 0.5, 1.5, 2, 0, 1, 0, 1.5, 0],
               [7, 8, 4, 5.5, 4.5, 4, 5, 3, 2, 0.5, 1]]
-    TEST_KB = [[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+    KT_TEST_B = [[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
               [12, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 1]]
-    TEST_KC = [[5, 2, 5],
+    KT_TEST_C = [[5, 2, 5],
               [3, 4, 4]]
-    TEST_KD = [[1, 2],
+    KT_TEST_D = [[1, 2],
               [3, 4]]
-    TEST_KE = [[5, 10, 15, 20],
+    KT_TEST_E = [[5, 10, 15, 20],
               [4, 20, 16, 12]]
-    TEST_KF = [[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    KT_TEST_F = [[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
               [2, 3, 4, 5, 6, 7, 6, 9, 10, 11]]
-    TEST_KG = [[16, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+    KT_TEST_G = [[16, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
               [45, 44, 43, 42, 41, 40, 39, 38, 37, 36, 35, 34, 33, 32, 55]]
+
+  def self.test
+    kt_sets = [KT_TEST_A, KT_TEST_B, KT_TEST_C, KT_TEST_D, KT_TEST_E, KT_TEST_F, KT_TEST_G]
+    mw_sets = [MW_TEST_A, MW_TEST_B, MW_TEST_C, MW_TEST_D, MW_TEST_E, MW_TEST_F]
+    (kt_sets + mw_sets).each do |set|
+      a = self.build(*set)
+      a.display_diagnostics
+    end
+    puts "Analyzer self test complete"
+  end
 
   class KendallTau
   
@@ -50,7 +59,7 @@ module Analyzer
         taub = self.new(*set)
         taub.send(:display_diagnostics)
       end
-      puts "\nDiagnostics complete."
+      puts "\nKendall Tau Test Complete."
     end
 
     def self.benchmark
@@ -71,19 +80,20 @@ module Analyzer
     end
     
     def display_diagnostics
-      puts "\n\n"
+      puts "\n---------------------"
+      puts "Analyzer: #{self.class}"
+      puts "---------------------"
       puts "Correlation: #{correlation} "
       puts "Relationship: #{relationship}"
       puts "---------------------"
       puts "Set X:      #{@x}"
       puts "Set Y:      #{@y}"
-      puts "Pairs:      #{pairs}"
       puts "---------------------"
       puts "Concordant: #{@nc}"
       puts "Discordant: #{@na}"
       puts "Tied X:     #{@nx}"
       puts "Tied Y:     #{@ny}"
-      puts "---------------------"
+      puts "---------------------\n"
     end
   end
 
@@ -91,26 +101,17 @@ module Analyzer
 
 
     def self.test
-      invert_c = [MW_TEST_C.first.map(&:!), MW_TEST_C.last] 
-      u_test = self.new(*MW_TEST_A)
-      u_test.diagnostics
-      u_test = self.new(*MW_TEST_B)
-      u_test.diagnostics
-      u_test = self.new(*MW_TEST_C)
-      u_test.diagnostics
-      u_test = self.new(*invert_c)
-      u_test.diagnostics
-      u_test = self.new(*MW_TEST_D)
-      u_test.diagnostics
-      u_test = self.new(*MW_TEST_E)
-      u_test.diagnostics
-      begin
-      u_test = self.new(*MW_TEST_F)
-      u_test.diagnostics
-      rescue Exception => e
-        puts e.message
+      invert_b = [MW_TEST_B.last.map(&:!), MW_TEST_B.first]
+      [MW_TEST_A, MW_TEST_B, invert_b, MW_TEST_C, MW_TEST_D, MW_TEST_E, MW_TEST_F].each do |set|
+        begin
+          mw_test = self.new(*set)
+          mw_test.display_diagnostics
+        rescue Exception => e
+          puts "Error caught in test set:"
+          puts e.message
+        end
       end
-      puts "Diagnostics complete"
+      puts "\nMann-Whitney Test Complete"
     end
 
     def self.benchmark
@@ -131,7 +132,9 @@ module Analyzer
     end
 
     def display_diagnostics
-      puts "\n--------------------------------"
+      puts "\n---------------------"
+      puts "Analyzer: #{self.class}"
+      puts "---------------------"
       puts "Correlation (z): #{correlation}"
       puts "Ordinal set: #{@ordinal}"
       puts "Dichotomous set: #{@dichotomous}"
@@ -142,7 +145,7 @@ module Analyzer
       puts "u: #{@u}"
       puts "z: #{@z}"
       puts "relationship: #{relationship}"
-      puts "--------------------------------"
+      puts "--------------------------------\n\n"
     end
   end
 end
